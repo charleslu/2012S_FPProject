@@ -1,5 +1,0 @@
-CPP = cl
-CPPFLAGS = /GX /GR"" -Dfor="if(0);else for"
-OFLAGS = -c
-EXEFLAG = -Fe
-OBJEXT = obj
