@@ -3,4 +3,7 @@ TO DO LIST:
 By next meeting:
 - Create a list of functions available to each class.
 - Ensure the hierarchy relationship between each class.
-
+---------------------------------------------------------
+By June 18th:
+- Download CodeBlock for MAC
+- Setup GDB on Windows
