@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1339467474 source:c:\users\charles lu\documents\my git\2012s_fpproject\floorplangit\main.cc
+	<iostream>
+	<cstdlib>
+	<cmath>
+	"MathUtil.hh"
+	"Floorplan.hh"
+
+1339467474 c:\users\charles lu\documents\my git\2012s_fpproject\floorplangit\mathutil.hh
+	<iostream>
+
+1339467474 c:\users\charles lu\documents\my git\2012s_fpproject\floorplangit\floorplan.hh
+	<string>
+	<iostream>
+	<map>
+
