@@ -1,0 +1,6 @@
+TO DO LIST:
+
+By next meeting:
+- Create a list of functions available to each class.
+- Ensure the hierarchy relationship between each class.
+
