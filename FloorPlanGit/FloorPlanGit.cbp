@@ -31,6 +31,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Floorplan.cc" />
+		<Unit filename="Floorplan.hh" />
+		<Unit filename="Main.cc" />
+		<Unit filename="MathUtil.cc" />
+		<Unit filename="MathUtil.hh" />
 		<Extensions>
 			<code_completion />
 			<debugger />
