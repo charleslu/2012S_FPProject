@@ -1,0 +1,28 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf470
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf0 TO DO LIST:\
+	\
+- Discover the console for gdb\
+	- ex. print itemCount\
+	- Project -> Tools -> Debugging Symbol\
+\
+- Look for Grid, Cluster, Group definitions in the documentation\
+	- gridLayout is exclusively for repeating elements\
+\
+- Define AR\
+\
+- Define the Legalization Problem\
+	# Right now if the element doesn't fit into the provided space, the layout will return error.\
+	# Solution: At any step, if the component (element) size exceeds the bounding box (container), 	we will modify the container, and eventually its previous container(s) like a tree. \
+	# Hint: geographyHint can be helpful to determine what is needed to be changed.\
+	\
+	# PS: Element size is fixed. We will only modify its container size.\
+	# Ex. If Xcontainer > Xelement && Ycontainer < Yelement, we'd like to increase the Ycontainer 	and decrease Xcontainer so Xc = Xe and Yc = Ye.\
+\
+***- Create a simple error case\
+***- Create a simple error fixing solution\
+}
