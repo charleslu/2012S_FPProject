@@ -20,7 +20,7 @@ extern bool verbose;
 //     they expect to be in their layout.
 // We will use this enum as the key for a map of components neeeded in a layout manager.
 // TODO  Undoubtedly there is already an enum or other type system for components in M5.
-//       As part of integration, we will see if we can change to the standard, 
+//       As part of integration, we will see if we can change to the standard,
 //       or continue to maintain a simpler one for floorplanning.
 #define ComponentTypeCount 18
 
@@ -71,7 +71,7 @@ class dummyComponent {
 public:
     dummyComponent (ComponentType typeArg);
     dummyComponent (string name);
-    
+
     string        getName() { return name; }
     ComponentType getType() { return type; }
     void          myPrint ();
@@ -91,7 +91,7 @@ extern ostream& operator<< (ostream& s, dummyComponent& c);
 class FPObject {
     int refCount;
 
-// Make the common variables available to the inheriting classes.    
+// Make the common variables available to the inheriting classes.
 protected:
     // The x,y values will be relative to the enclosing object.
     double x;                   // The location in the container.  0.0 is on the left.
@@ -104,7 +104,7 @@ protected:
     GeographyHint hint;         // Arguably, we should form a map of hints to components.
                                 // But for now this is simpler.
     int    count;               // The number of the these components in this group of components.
-                                // This makes it easier to add, say, 8 identical cores as one object.    
+                                // This makes it easier to add, say, 8 identical cores as one object.
 
 public:
     FPObject();
@@ -128,7 +128,7 @@ public:
             string        getUniqueName()  { if (name == " " || name == "") return name;
                                              else return name + getStringFromInt(Name2Count(name)); }
 
-    
+
     // Calculate the output position taking starting offset and mirroring.
             double        calcX(double startX);
             double        calcY(double startY);
@@ -143,7 +143,7 @@ public:
     virtual void          setSize(double widthArg, double heightArg);
     virtual void          setLocation(double xArg, double yArg);
 
-    virtual bool          layout (FPOptimization opt, double targetAR =  1.0) = 0; 
+    virtual bool          layout (FPOptimization opt, double targetAR =  1.0) = 0;
     virtual void          outputHotSpotLayout(ostream& o, double startX = 0.0, double startY = 0.0);
 
 };
@@ -227,7 +227,7 @@ public:
 
     // Give the command for this container to lay itself out.
     // return a bool to indicate success or failure.
-    virtual bool           layout (FPOptimization opt, double targetAR =  1.0) = 0; 
+    virtual bool           layout (FPOptimization opt, double targetAR =  1.0) = 0;
     virtual void           outputHotSpotLayout(ostream& o, double startX = 0.0, double startY = 0.0) = 0;
 
     // Ways to add components.
@@ -293,6 +293,7 @@ class geogLayout : public FPContainer {
     // FPObject** centerItems;    // During layout, we will store up the center items, stick them in a bag, and lay them out last.
     // int        centerItemsCount;
     bool layoutHelper (double targetWidth, double targetHeight, double curX, double curY, FPObject ** layoutStack, int curDepth, FPObject ** centerItems, int centerItemsCount);
+    double newAR;
 
 public:
     geogLayout ();

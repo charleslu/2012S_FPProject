@@ -13,6 +13,24 @@
 #include "MathUtil.hh"
 #include "Floorplan.hh"
 
+void generateErrorCase()
+{
+    // This section is to test the bottom-up fixups feature
+
+    geogLayout * fp1 = new geogLayout();
+
+    fp1->addComponentCluster("e3", 1, 3, 3., 1., Right);
+    fp1->addComponentCluster("e4", 1, 3, 3., 1., Right);
+    fp1->addComponentCluster("e1", 1, 3, 3., 1., Top);
+    fp1->addComponentCluster("e2", 1, 3, 3., 1., Top);
+
+    fp1->layout(AspectRatio, 1.);
+
+    ostream& HSOut = outputHotSpotHeader("Test.flp");
+    fp1->outputHotSpotLayout(HSOut);
+    outputHotSpotFooter(HSOut);
+}
+
 void generateTRIPS_Examples()
 {
     // First layout the TRIPS core model.
@@ -57,13 +75,13 @@ void generateTRIPS_Examples()
     bool success = WholeChip->layout(AspectRatio, 1.);
 
     if (!success) cerr << "Unable to layout specified CMP configuration.";
-    else 
+    else
     {
         ostream& HSOut = outputHotSpotHeader("TRIPS-Final.flp");
         WholeChip->outputHotSpotLayout(HSOut);
         outputHotSpotFooter(HSOut);
     }
-    
+
 
     // TODO This example never got finished.
     // Now layout the CMP as defined in the initial ISCA paper.
@@ -103,11 +121,11 @@ void generateCheckerBoard_Examples()
     WholeChip->addComponentCluster(L2, 2, 4*area, 20, 1, LeftRight);
     WholeChip->addComponentCluster(L2, 2, 2*area, 20, 1, TopBottom);
     WholeChip->addComponent(top, 2, TopBottomMirror);
-    
+
     success = WholeChip->layout(AspectRatio, 1.);
 
     if (!success) cerr << "Unable to layout specified CMP configuration.";
-    else 
+    else
     {
         // These are too messy with names.  Just output the shapes.
         setNameMode(false);
@@ -131,11 +149,11 @@ void generateCheckerBoard_Examples()
     WholeChip->addComponentCluster(L2, 2, 2*area, 20, 1, TopBottom);
     WholeChip->addComponent(top, 1, Top);
     WholeChip->addComponent(cont, 2, Left);
-    
+
     success = WholeChip->layout(AspectRatio, 1.);
 
     if (!success) cerr << "Unable to layout specified CMP configuration.";
-    else 
+    else
     {
         // These are too messy with names.  Just output the shapes.
         setNameMode(false);
@@ -178,7 +196,7 @@ void generateCheckerBoard_Examples()
     success = WholeChip->layout(AspectRatio, 1.);
 
     if (!success) cerr << "Unable to layout specified CMP configuration.";
-    else 
+    else
     {
         // These are too messy with names.  Just output the shapes.
         setNameMode(false);
@@ -196,7 +214,7 @@ void generateCheckerBoard_Examples()
     /////////////////////////////////////////////////////////
 
     // Variables used in all the 4 layouts.
-    geogLayout * row;    
+    geogLayout * row;
     geogLayout * repeat;
     gridLayout * grid;
 
@@ -209,11 +227,11 @@ void generateCheckerBoard_Examples()
     repeat->addComponent(row, 2, TopBottom180);
     grid = new gridLayout();
     grid->addComponent(repeat, 16);
-        
+
     success = grid->layout(AspectRatio, 1.);
 
     if (!success) cerr << "Unable to layout specified CMP configuration.";
-    else 
+    else
     {
         ostream& HSOut = outputHotSpotHeader("Regular-50.flp");
         grid->outputHotSpotLayout(HSOut);
@@ -229,11 +247,11 @@ void generateCheckerBoard_Examples()
     repeat->addComponent(row, 2, TopBottom180);
     grid = new gridLayout();
     grid->addComponent(repeat, 16);
-        
+
     success = grid->layout(AspectRatio, 1.);
 
     if (!success) cerr << "Unable to layout specified CMP configuration.";
-    else 
+    else
     {
         ostream& HSOut = outputHotSpotHeader("Regular-25.flp");
         grid->outputHotSpotLayout(HSOut);
@@ -250,11 +268,11 @@ void generateCheckerBoard_Examples()
     repeat->addComponent(row, 2, TopBottom180);
     grid = new gridLayout();
     grid->addComponent(repeat, 16);
-        
+
     success = grid->layout(AspectRatio, 1.);
 
     if (!success) cerr << "Unable to layout specified CMP configuration.";
-    else 
+    else
     {
         ostream& HSOut = outputHotSpotHeader("Alternate-25.flp");
         grid->outputHotSpotLayout(HSOut);
@@ -288,11 +306,11 @@ void generateCheckerBoard_Examples()
 
     grid = new gridLayout();
     grid->addComponent(repeat3, 4);
-        
+
     success = grid->layout(AspectRatio, 1.);
 
     if (!success) cerr << "Unable to layout specified CMP configuration.";
-    else 
+    else
     {
         ostream& HSOut = outputHotSpotHeader("Rotated-25.flp");
         grid->outputHotSpotLayout(HSOut);
@@ -321,7 +339,7 @@ void generateMcPAT_ExamplesHelper(int clusterCount, int clusterSize, const char 
     // The 32 cluster McPAT has .52 as the NoC size.
     // These are in a 4x8 grid, so assume size is what is needed for 4 wide bisection bandwidth.
     double baseNoC = .52;
-    
+
     // Get the smaller of the grid dimensions in cluster size.
     int minDim = balanceFactors(clusterCount, .99);
     double NoCArea = baseNoC;
@@ -336,7 +354,7 @@ void generateMcPAT_ExamplesHelper(int clusterCount, int clusterSize, const char 
     cluster->addComponentCluster(Core, clusterSize, 1, 4, 1, Top);
     if (clusterSize > 1) cluster->addComponentCluster(CrossBar, 1, xbarArea, 20, 1, Top);
     cluster->addComponentCluster(L2, clusterSize, 1.2, 4, 1, Top);
-    
+
     // Now form the grid
     gridLayout * grid = new gridLayout();
     grid->addComponent(cluster, clusterCount);
@@ -346,7 +364,7 @@ void generateMcPAT_ExamplesHelper(int clusterCount, int clusterSize, const char 
     bool success = grid->layout(AspectRatio, 0.999);
 
     if (!success) cerr << "Unable to layout specified CMP configuration.";
-    else 
+    else
     {
         ostream& HSOut = outputHotSpotHeader(filename);
         grid->outputHotSpotLayout(HSOut);
@@ -357,7 +375,7 @@ void generateMcPAT_ExamplesHelper(int clusterCount, int clusterSize, const char 
 
 void generateMcPAT_Examples()
 {
-    // Here we will try 
+    // Here we will try
     generateMcPAT_ExamplesHelper(32, 1, "McPAT_32x1.flp");
     generateMcPAT_ExamplesHelper(64, 1, "McPAT_64x1.flp");
     generateMcPAT_ExamplesHelper(16, 4, "McPAT_16x4.flp");
@@ -421,12 +439,12 @@ void generatePenryn45nm ()
     rz_alu     *= undiff_ratio;
     rz_fpu     *= undiff_ratio;
 
-    // MMU 
+    // MMU
     geogLayout * MMU = new geogLayout();
     MMU->addComponentCluster("Dtlb", 1, rz_dtlb, 20., 1., Left);
     MMU->addComponentCluster("Itlb", 1, rz_itlb, 20., 1., Right);
 
-    // ReN 
+    // ReN
     geogLayout * ReN = new geogLayout();
     ReN->addComponentCluster("IntRAT", 1, rz_intrat, 20., 1., Left);
     ReN->addComponentCluster("FlpRAT", 1, rz_flprat, 20., 1., Center);
@@ -504,7 +522,7 @@ void generatePenryn45nm ()
 
     bool success = core->layout(AspectRatio, 1);
     if (!success) cout << "Unable to layout specified CMP configuration.";
-    else 
+    else
     {
         setNameMode(false);
         ostream& HSOut = outputHotSpotHeader("Penryn45.flp");
@@ -533,14 +551,14 @@ void generate8corePenrynCMP()
   L2chunk->addComponentCluster(NoC, 1, rz_noc, 50., 1., Left);
 
   // Now just create all the rest at once.
-  geogLayout * chip = new geogLayout();  
+  geogLayout * chip = new geogLayout();
   chip->addComponentCluster("MC",  8, rz_mc/2, 20., 1., TopBottom);
   //chip->addComponentCluster("Core", 8, rz_core, 20., 1., TopBottom);
   chip->addComponent(core, 8, TopBottomMirror);
   chip->addComponent(L2chunk, 8, Center);
   bool success = chip->layout(AspectRatio, 1);
   if (!success) cout << "Unable to layout specified CMP configuration.";
-  else 
+  else
   {
       ostream& HSOut = outputHotSpotHeader("CMP8Core.flp");
       chip->outputHotSpotLayout(HSOut);
@@ -604,7 +622,7 @@ int main(int argc, char* argv[])
   ///////////////////////////////////////////////////////
   // Look at these subroutines above for examples of how to build floorplans using this tool.
   //////////////////////////////////////////////////////
-
+  generateErrorCase();
   generateTRIPS_Examples();
   generateCheckerBoard_Examples();
   generateMcPAT_Examples();

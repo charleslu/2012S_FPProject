@@ -123,8 +123,8 @@ void dummyComponent::myPrint()
 }
 
 // Methods for FPObject
-FPObject::FPObject() 
-{ 
+FPObject::FPObject()
+{
     x = 0.0;
     y = 0.0;
     width = 0.0;
@@ -137,14 +137,14 @@ FPObject::FPObject()
     refCount = 0;
 }
 
-void FPObject::setSize(double widthArg, double heightArg) 
+void FPObject::setSize(double widthArg, double heightArg)
 {
     width = widthArg;
     height = heightArg;
     area=width*height;
 }
 
-void FPObject::setLocation(double xArg, double yArg) 
+void FPObject::setLocation(double xArg, double yArg)
 {
     x = xArg;
     y = yArg;
@@ -153,11 +153,11 @@ void FPObject::setLocation(double xArg, double yArg)
 //Q: Why is there a case where one doesn't print the name?
 //A: // These are too messy with names.  Just output the shapes.
 void FPObject::outputHotSpotLayout(ostream& o, double startX, double startY)
-{ 
+{
     string uname = (printNames) ? getUniqueName() : " ";
 
-    o << uname << "\t" << getWidth()/1000 << "\t" << getHeight()/1000 
-      << "\t" << calcX(startX)/1000 << "\t" << calcY(startY)/1000 << "\n"; 
+    o << uname << "\t" << getWidth()/1000 << "\t" << getHeight()/1000
+      << "\t" << calcX(startX)/1000 << "\t" << calcY(startY)/1000 << "\n";
 }
 
 
@@ -199,7 +199,7 @@ double FPCompWrapper::ARInRange(double AR)
     maxAR = getMaxAR();
     double minAR = getMinAR();
     double retval = AR;
-    if (maxAR < 1) 
+    if (maxAR < 1)
     {
         retval = MIN (retval, minAR);
         retval = MAX (retval, maxAR);
@@ -225,13 +225,21 @@ void FPCompWrapper::flip()
 
 bool FPCompWrapper::layout(FPOptimization opt, double ratio)
 {
+
+
+
     // Make sure the ratio is within the stated constraints.
-    ratio = ARInRange(ratio);
+    double newRatio = ARInRange(ratio);
+
+    //Before or After?
+    if (newRatio != ratio) return false;
+
     // Calculate width height from area and AR.
     // We have w/h = ratio => w = ratio*h.
     // and w*h = area => ratio*h*h = area => h^2 = area/ratio => h = sqrt(area/ratio)
-    height = sqrt(area/ratio);
+    height = sqrt(area/newRatio);
     width = area/height;
+
     return true;
 }
 
@@ -239,7 +247,7 @@ bool FPCompWrapper::layout(FPOptimization opt, double ratio)
 int FPContainer::maxItemCount = 50;
 
 // Default constructor
-FPContainer::FPContainer() 
+FPContainer::FPContainer()
 {
     itemCount = 0;
     items = new FPObject*[maxItemCount];
@@ -369,7 +377,7 @@ double FPContainer::totalArea()
     // if (area != 0) return area;
     area = 0;
     int itemCount = getComponentCount();
-    for (int i=0; i<itemCount; i++) 
+    for (int i=0; i<itemCount; i++)
     {
         FPObject * item = getComponent(i);
         area += item->totalArea();
@@ -453,7 +461,7 @@ void gridLayout::outputHotSpotLayout(ostream& o, double startX, double startY)
     int compCount = xCount*yCount;
     string GridName = getUniqueName();
     o << "# Start of " << GridName << " Layout.  There are " << compCount << " components in a " << xCount << " by " << yCount << " grid.\n";
-    o << "# Total Grid Stats: X=" << calcX(startX) << " Y=" << calcY(startY) << " W=" << width 
+    o << "# Total Grid Stats: X=" << calcX(startX) << " Y=" << calcY(startY) << " W=" << width
       << "mm H=" << height << "mm Area=" << area << "mm^2\n";
     int compNum = 1;
     for (int i=0; i<yCount; i++)
@@ -469,7 +477,7 @@ void gridLayout::outputHotSpotLayout(ostream& o, double startX, double startY)
     o << "# End of " << GridName << " Layout.\n";
 }
 
-// Methods for Baglayout Class 
+// Methods for Baglayout Class
 bagLayout::bagLayout() : FPContainer()
 {
     type = Group;
@@ -491,7 +499,7 @@ bool bagLayout::layout (FPOptimization opt, double targetAR)
 
     if (verbose)
     {
-        cout << "In BagLayout, Area=" << area << " Width= " << remWidth << " Height=" 
+        cout << "In BagLayout, Area=" << area << " Width= " << remWidth << " Height="
              << remHeight << " Target AR=" << targetAR << "\n";
     }
 
@@ -507,7 +515,7 @@ bool bagLayout::layout (FPOptimization opt, double targetAR)
         // Except for the last component which gets places in the max dimension.
         // First calculate the AR, and the rest fill follow.
         double AR =  (remWidth > remHeight || i == itemCount-1) ? (compArea/remHeight)/remHeight : remWidth/(compArea/remWidth);
-        if (comp->getCount() > 1) 
+        if (comp->getCount() > 1)
         {
             // We have more than one component of the same type, so let the grid layout do the work.
             gridLayout * GL = new gridLayout();
@@ -540,10 +548,10 @@ bool bagLayout::layout (FPOptimization opt, double targetAR)
 
     if (verbose)
     {
-        cout << "Total Container Width=" << width << " Height=" << height << " Area=" 
+        cout << "Total Container Width=" << width << " Height=" << height << " Area="
              << width*height << " AR=" << width/height << "\n";
     }
-    
+
     return true;
 }
 
@@ -571,7 +579,7 @@ void bagLayout::outputHotSpotLayout(ostream& o, double startX, double startY)
     {
         groupName = getUniqueName();
         o << "# Start of " << groupName << " layout.\n";
-        o << "# Total Group Stats: X=" << calcX(startX) << " Y=" << calcY(startY) << " W=" << width 
+        o << "# Total Group Stats: X=" << calcX(startX) << " Y=" << calcY(startY) << " W=" << width
           << "mm H=" << height << "mm Area=" << area << "mm^2\n";
     }
     for (int i=0; i<getComponentCount(); i++)
@@ -600,7 +608,7 @@ fixedLayout::fixedLayout(const char * filename, double scalingFactor) : bagLayou
     locked = true;
 
     ifstream in (filename);
-    
+
     // cout << "In read of fixedLayout\n";
     while (true)
     {
@@ -611,7 +619,7 @@ fixedLayout::fixedLayout(const char * filename, double scalingFactor) : bagLayou
             in.get();
             continue;
         }
-        if (first == '#') // || first == ' ') 
+        if (first == '#') // || first == ' ')
         {
             char getChar;
             while (!in.eof())
@@ -633,7 +641,7 @@ fixedLayout::fixedLayout(const char * filename, double scalingFactor) : bagLayou
         in >> width >> height >> x >> y;
         this->addComponent(new FPCompWrapper(name, x*1000, y*1000, width*1000, height*1000));
     }
-    
+
     // Let's find out if the baseline x,y positions are at 0, 0.
     // If not, renormalize all the locations.
     double minX = 2000000000;
@@ -709,7 +717,7 @@ bool geogLayout::layout(FPOptimization opt, double targetAR)
     //   and then call the helper to recursively do the layout work.
     // We will keep track of containers we make in a "stack".
     // We will also need to keep track of center items so they can be layed out last.
-    
+
     // Assume no item will be more than split in two.
     int itemCount = getComponentCount();
     int maxArraySize = itemCount * 2;
@@ -720,15 +728,22 @@ bool geogLayout::layout(FPOptimization opt, double targetAR)
     for (int i=0; i<maxItemCount; i++) centerItems[i] = 0;
 
     // Calculate the total area, and the implied target width and height.
-    area = totalArea();
-    double remHeight = sqrt(area/targetAR);
-    double remWidth = area/remHeight;
+    do
+    {
+        area = totalArea();
+        double remHeight = sqrt(area/targetAR);
+        double remWidth = area/remHeight;
 
-    if (verbose)
-        cout << "In geogLayout.  A=" << area << " W=" << remWidth << " H=" << remHeight << "\n";
+        if (verbose)
+            cout << "In geogLayout.  A=" << area << " W=" << remWidth << " H=" << remHeight << "\n";
 
-    // Now do the real work.
-    bool retval = layoutHelper(remWidth, remHeight, 0, 0, layoutStack, 0, centerItems, 0);
+        // Now do the real work.
+        bool retval = layoutHelper(remWidth, remHeight, 0, 0, layoutStack, 0, centerItems, 0);
+
+        //Re-define the targetAR based on geogHint
+
+    }
+    while (!retval);
 
     // By now, the item list should be empty.
     if (getComponentCount() != 0)
@@ -778,7 +793,7 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
             FPObject * item = centerItems[i];
             BL->addComponent(item, item->getCount()/gcd);
         }
-         
+
         if (verbose)
             cout << "Laying out Center items.  Count=" << centerItemsCount << " GCD=" << gcd << "\n";
 
@@ -831,7 +846,7 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
             int newCount = comp->getCount() / 2;
             comp->setCount(newCount);
             bagLayout * BL1 = new bagLayout();
-            bagLayout * BL2 = new bagLayout();            
+            bagLayout * BL2 = new bagLayout();
             BL1->addComponent(comp);
             BL2->addComponent(comp);
             if (compHint == LeftRight || compHint == LeftRightMirror || compHint == LeftRight180)
@@ -866,7 +881,7 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         // Stuff the comp into a grid, and see if we can layout it out in the desired shape.
         // TODO TODO This assumes a component has an area.  For a container, it will not have an area until it gets layed out.
         double totalArea = comp->totalArea();
-        
+
         if (verbose)
             cout << "In geog, for component " << comp->getName() << " total component area=" << totalArea << "\n";
 
@@ -888,22 +903,32 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         if (compHint == Top) curY = curY + (remHeight - targetHeight);
         if (compHint == Bottom) newY += targetHeight;
 
+        // TODO: Here can be a potential spot to check the sign of newX/Y and curX/Y (cannot be negative)
+
         double targetAR = targetWidth/targetHeight;
         FPObject * FPLayout = comp;
-        if (comp->getCount() > 1) 
+        if (comp->getCount() > 1)
         {
             gridLayout * grid = new gridLayout();
             grid->addComponent(comp);
             grid->setHint(compHint);
             FPLayout = grid;
         }
-        FPLayout->layout(AspectRatio, targetAR);
+
+
+        //Start of Add-on Feature
+        bool isDiffAR = FPLayout->layout(AspectRatio, targetAR);
+        if (isDiffAR) return false;
+
+        //TODO: Q: Should we be able to detect overlapping components?
+
         FPLayout->setLocation(curX, curY);
         // Put the layout on the stack.
         layoutStack[curDepth] = FPLayout;
         if (compHint == Left || compHint == Right) remWidth -= FPLayout->getWidth();
         else if (compHint == Top || compHint == Bottom) remHeight -= FPLayout->getHeight();
-        layoutHelper(remWidth, remHeight, newX, newY, layoutStack, curDepth + 1, centerItems, centerItemsCount);
+        isDiffAR = layoutHelper(remWidth, remHeight, newX, newY, layoutStack, curDepth + 1, centerItems, centerItemsCount);
+        if (isDiffAR) return false;
     }
     else if (compHint != Center)
     {
@@ -916,13 +941,19 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
 
     return true;
 }
+/*
+bool geogLayout::fixLayout()
+{
+
+}
+*/
 
 void geogLayout::outputHotSpotLayout(ostream& o, double startX, double startY)
 {
     pushMirrorContext(startX, startY);
     string layoutName = getUniqueName();
     o << "# Start of " << layoutName << " Layout.\n";
-    o << "# Total Cluster Stats: X=" << calcX(startX) << " Y=" << calcY(startY) << " W=" << width 
+    o << "# Total Cluster Stats: X=" << calcX(startX) << " Y=" << calcY(startY) << " W=" << width
       << "mm H=" << height << "mm Area=" << area << "mm^2\n";
     for (int i=0; i<getComponentCount(); i++)
     {
