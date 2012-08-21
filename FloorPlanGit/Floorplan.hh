@@ -196,7 +196,7 @@ class FPContainer : public FPObject {
     // In this way, we can maintain proper refcounts that can tell us
     //    when things can be deleted.
     int itemCount;
-    FPObject** items;
+    FPObject ** items;
     void       addComponentAtIndex (FPObject * comp, int index);
     FPObject * removeComponentAtIndex (int index);
 

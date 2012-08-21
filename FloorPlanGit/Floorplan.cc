@@ -223,22 +223,19 @@ void FPCompWrapper::flip()
     maxAspectRatio = 1/maxAspectRatio;
 }
 
-bool FPCompWrapper::layout(FPOptimization opt, double ratio)
+    bool FPCompWrapper::layout(FPOptimization opt, double ratio)
 {
-
-
-
     // Make sure the ratio is within the stated constraints.
     double newRatio = ARInRange(ratio);
-
-    //Before or After?
-    if (newRatio != ratio) return false;
 
     // Calculate width height from area and AR.
     // We have w/h = ratio => w = ratio*h.
     // and w*h = area => ratio*h*h = area => h^2 = area/ratio => h = sqrt(area/ratio)
     height = sqrt(area/newRatio);
     width = area/height;
+
+    // Charles: If the newRatio is out of bound, we change the container box.
+    if (newRatio != ratio) return false;
 
     return true;
 }
@@ -722,14 +719,22 @@ bool geogLayout::layout(FPOptimization opt, double targetAR)
     int itemCount = getComponentCount();
     int maxArraySize = itemCount * 2;
     FPObject ** layoutStack = (FPObject **)malloc(sizeof(FPObject *) * maxArraySize);
-    for (int i=0; i<maxArraySize; i++) layoutStack[i] = 0;
-    // -- Q:
-	FPObject ** centerItems =  (FPObject **)(malloc (sizeof(FPObject *) * FPContainer::maxItemCount));
-    for (int i=0; i<maxItemCount; i++) centerItems[i] = 0;
+    FPObject ** centerItems =  (FPObject **)(malloc (sizeof(FPObject *) * FPContainer::maxItemCount));
 
-    // Calculate the total area, and the implied target width and height.
+    // Charles backup all the items in case we need to re-layout
+    FPObject ** backupItems = (FPObject **)malloc(sizeof(FPObject *) * itemCount);
+    for (int i=0; i<itemCount; i++) backupItems[i] = getComponent(i);
+
+    // Charles TODO: Could we end up infinitely correcting the layout? Maybe set an upper limit of re-layout.
+    bool retval = true;
+
     do
     {
+
+        for (int i=0; i<maxArraySize; i++) layoutStack[i] = 0;
+        for (int i=0; i<maxItemCount; i++) centerItems[i] = 0;
+
+        // Calculate the total area, and the implied target width and height.
         area = totalArea();
         double remHeight = sqrt(area/targetAR);
         double remWidth = area/remHeight;
@@ -738,10 +743,14 @@ bool geogLayout::layout(FPOptimization opt, double targetAR)
             cout << "In geogLayout.  A=" << area << " W=" << remWidth << " H=" << remHeight << "\n";
 
         // Now do the real work.
-        bool retval = layoutHelper(remWidth, remHeight, 0, 0, layoutStack, 0, centerItems, 0);
+        retval = layoutHelper(remWidth, remHeight, 0, 0, layoutStack, 0, centerItems, 0);
 
-        //Re-define the targetAR based on geogHint
-
+        //Re-defined targetAR based on geogHint and reset item list.
+        if (!retval)
+        {
+            targetAR = newAR;
+            for (int i=0; i<itemCount; i++) replaceComponent(backupItems[i], i);
+        }
     }
     while (!retval);
 
@@ -903,7 +912,7 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         if (compHint == Top) curY = curY + (remHeight - targetHeight);
         if (compHint == Bottom) newY += targetHeight;
 
-        // TODO: Here can be a potential spot to check the sign of newX/Y and curX/Y (cannot be negative)
+        // Charles TODO: Here can be a potential spot to check the sign of newX/Y and curX/Y (cannot be negative)
 
         double targetAR = targetWidth/targetHeight;
         FPObject * FPLayout = comp;
@@ -916,11 +925,28 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         }
 
 
-        //Start of Add-on Feature
-        bool isDiffAR = FPLayout->layout(AspectRatio, targetAR);
-        if (isDiffAR) return false;
+        // Charles Start of Add-on Feature
+        // If the targetAR is out of maxAR/minAR of the component, re-layout the whole floorplan.
 
-        //TODO: Q: Should we be able to detect overlapping components?
+        bool isDiffAR = FPLayout->layout(AspectRatio, targetAR);
+        if (isDiffAR)
+        {
+            if (compHint == Left || compHint == Right)
+            {
+                double newHeight = FPLayout->getHeight();
+                newAR = totalArea/pow(newHeight, 2);
+            }
+
+            else  //(compHint == Top || compHint == Bottom)
+            {
+                double newWidth = FPLayout->getWidth();
+                newAR = pow(newWidth, 2)/totalArea;
+            }
+
+            return false;
+        }
+
+        // Charles TODO: Q: Should we be able to detect overlapping components?
 
         FPLayout->setLocation(curX, curY);
         // Put the layout on the stack.
