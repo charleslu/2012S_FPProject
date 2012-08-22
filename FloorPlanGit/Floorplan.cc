@@ -749,7 +749,8 @@ bool geogLayout::layout(FPOptimization opt, double targetAR)
         if (!retval)
         {
             targetAR = newAR;
-            for (int i=0; i<itemCount; i++) replaceComponent(backupItems[i], i);
+            for (int i=itemCount-getComponentCount(); i>0; i--) addComponentToFront(backupItems[i-1]);
+            //for (int i=0; i<itemCount; i++) replaceComponent(backupItems[i], i);
         }
     }
     while (!retval);
@@ -928,19 +929,19 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         // Charles Start of Add-on Feature
         // If the targetAR is out of maxAR/minAR of the component, re-layout the whole floorplan.
 
-        bool isDiffAR = FPLayout->layout(AspectRatio, targetAR);
-        if (isDiffAR)
+        bool isSameAR = FPLayout->layout(AspectRatio, targetAR);
+        if (!isSameAR)
         {
             if (compHint == Left || compHint == Right)
             {
                 double newHeight = FPLayout->getHeight();
-                newAR = totalArea/pow(newHeight, 2);
+                newAR = getArea()/pow(newHeight, 2);
             }
 
             else  //(compHint == Top || compHint == Bottom)
             {
                 double newWidth = FPLayout->getWidth();
-                newAR = pow(newWidth, 2)/totalArea;
+                newAR = pow(newWidth, 2)/getArea();
             }
 
             return false;
@@ -953,8 +954,8 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         layoutStack[curDepth] = FPLayout;
         if (compHint == Left || compHint == Right) remWidth -= FPLayout->getWidth();
         else if (compHint == Top || compHint == Bottom) remHeight -= FPLayout->getHeight();
-        isDiffAR = layoutHelper(remWidth, remHeight, newX, newY, layoutStack, curDepth + 1, centerItems, centerItemsCount);
-        if (isDiffAR) return false;
+        bool retval = layoutHelper(remWidth, remHeight, newX, newY, layoutStack, curDepth + 1, centerItems, centerItemsCount);
+        if (!retval) return false;
     }
     else if (compHint != Center)
     {
