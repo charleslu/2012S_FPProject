@@ -2,12 +2,12 @@
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
 	<File name="Floorplan.cc" open="1" top="0" tabpos="1">
-		<Cursor position="31389" topLine="925" />
+		<Cursor position="21982" topLine="701" />
 	</File>
 	<File name="Floorplan.hh" open="1" top="0" tabpos="3">
 		<Cursor position="5289" topLine="100" />
 	</File>
 	<File name="Main.cc" open="1" top="1" tabpos="2">
-		<Cursor position="434" topLine="6" />
+		<Cursor position="396" topLine="6" />
 	</File>
 </CodeBlocks_layout_file>

@@ -19,10 +19,10 @@ void generateErrorCase()
 
     geogLayout * fp1 = new geogLayout();
 
-    fp1->addComponentCluster("e3", 1, 3, 3., 1., Left);
+    fp1->addComponentCluster("e3", 1, 3, 3., 1., Right);
     fp1->addComponentCluster("e4", 1, 3, 3., 1., Right);
     fp1->addComponentCluster("e1", 1, 3, 3., 1., Top);
-    fp1->addComponentCluster("e2", 1, 3, 3., 1., Bottom);
+    fp1->addComponentCluster("e2", 1, 3, 3., 1., Top);
 
     fp1->layout(AspectRatio, 1.);
 
