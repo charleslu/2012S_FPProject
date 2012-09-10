@@ -31,6 +31,9 @@ static double yTop[maxMirrorDepth];
 static int yMirrorDepth = 0;
 static bool printNames = true;
 
+// Charles Maximum layout retries
+#define maxRetry 20
+
 void setNameMode(bool flag)
 {
     printNames = flag;
@@ -727,10 +730,10 @@ bool geogLayout::layout(FPOptimization opt, double targetAR)
 
     // Charles TODO: Could we end up infinitely correcting the layout? Maybe set an upper limit of re-layout.
     bool retval = true;
+    int retryCount = 0;
 
     do
     {
-
         for (int i=0; i<maxArraySize; i++) layoutStack[i] = 0;
         for (int i=0; i<maxItemCount; i++) centerItems[i] = 0;
 
@@ -749,11 +752,15 @@ bool geogLayout::layout(FPOptimization opt, double targetAR)
         if (!retval)
         {
             targetAR = newAR;
+
+            // Charles TODO: Current restoring method only works with Left, Right, Top, Bottom components.
             for (int i=itemCount-getComponentCount(); i>0; i--) addComponentToFront(backupItems[i-1]);
             //for (int i=0; i<itemCount; i++) replaceComponent(backupItems[i], i);
         }
+
+        retryCount++;
     }
-    while (!retval);
+    while (!retval && retryCount < maxRetry);
 
     // By now, the item list should be empty.
     if (getComponentCount() != 0)
@@ -935,6 +942,7 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
             if (compHint == Left || compHint == Right)
             {
                 double newHeight = FPLayout->getHeight();
+                //This getArea() returns the total area of all the components in this container.
                 newAR = getArea()/pow(newHeight, 2);
             }
 
