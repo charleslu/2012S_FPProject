@@ -21,8 +21,8 @@ void generateErrorCase()
 
     fp1->addComponentCluster("e3", 1, 3, 3., 1., Right);
     fp1->addComponentCluster("e4", 1, 3, 3., 1., Right);
-    fp1->addComponentCluster("e1", 1, 3, 3., 1., Top);
-    fp1->addComponentCluster("e2", 1, 3, 3., 1., Top);
+    fp1->addComponentCluster("e1", 1, 3, 3., 1., Bottom);
+    fp1->addComponentCluster("e2", 1, 3, 3., 1., Bottom);
 
     fp1->layout(AspectRatio, 1.);
 
@@ -623,6 +623,8 @@ int main(int argc, char* argv[])
   // Look at these subroutines above for examples of how to build floorplans using this tool.
   //////////////////////////////////////////////////////
   generateErrorCase();
+
+
   generateTRIPS_Examples();
   generateCheckerBoard_Examples();
   generateMcPAT_Examples();

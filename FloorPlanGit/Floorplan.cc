@@ -19,6 +19,13 @@
 // This will be used to keep track of user's request for more output during layout.
 bool verbose = false;
 
+// Charles: Legalization Problem. This is used to turn on/off whether we need to keep the same area after legalizing the layout.
+bool changeArea = true;
+
+// Once an item is placed at right or top, mark = false;
+bool rightMark = true;
+bool topMark = true;
+
 // Temporary local for crazy mirror reflection stuff.
 #define maxMirrorDepth 20
 static bool xReflect = false;
@@ -728,7 +735,7 @@ bool geogLayout::layout(FPOptimization opt, double targetAR)
     FPObject ** backupItems = (FPObject **)malloc(sizeof(FPObject *) * itemCount);
     for (int i=0; i<itemCount; i++) backupItems[i] = getComponent(i);
 
-    // Charles TODO: Could we end up infinitely correcting the layout? Maybe set an upper limit of re-layout.
+    // Charles Exit the do-while look after re-laying out 20 times.
     bool retval = true;
     int retryCount = 0;
 
@@ -787,6 +794,7 @@ bool geogLayout::layout(FPOptimization opt, double targetAR)
 
     free(centerItems);
     free(layoutStack);
+    free(backupItems);
     return retval;
 }
 
@@ -915,10 +923,10 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
             targetWidth = remWidth;
             targetHeight = totalArea/targetWidth;
         }
-        if (compHint == Left) newX += targetWidth;
-        if (compHint == Right) curX = curX + (remWidth - targetWidth);
-        if (compHint == Top) curY = curY + (remHeight - targetHeight);
-        if (compHint == Bottom) newY += targetHeight;
+        //if (compHint == Left) newX += targetWidth;
+        //if (compHint == Right) curX = curX + (remWidth - targetWidth);
+        //if (compHint == Top) curY = curY + (remHeight - targetHeight);
+        //if (compHint == Bottom) newY += targetHeight;
 
         // Charles TODO: Here can be a potential spot to check the sign of newX/Y and curX/Y (cannot be negative)
 
@@ -935,33 +943,96 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
 
         // Charles Start of Add-on Feature
         // If the targetAR is out of maxAR/minAR of the component, re-layout the whole floorplan.
-
         bool isSameAR = FPLayout->layout(AspectRatio, targetAR);
+        double diffWidth, diffHeight;
+
         if (!isSameAR)
         {
             if (compHint == Left || compHint == Right)
             {
+                diffWidth = FPLayout->getWidth() - targetWidth;
                 double newHeight = FPLayout->getHeight();
+
                 //This getArea() returns the total area of all the components in this container.
                 newAR = getArea()/pow(newHeight, 2);
             }
 
             else  //(compHint == Top || compHint == Bottom)
             {
+                diffHeight = FPLayout->getHeight() - targetHeight;
                 double newWidth = FPLayout->getWidth();
                 newAR = pow(newWidth, 2)/getArea();
             }
 
-            return false;
+            // If we decide to not change container's area, re-layout.
+            if (!changeArea) return false;
         }
 
         // Charles TODO: Q: Should we be able to detect overlapping components?
 
+        if (compHint == Left) newX += FPLayout->getWidth();
+        if (compHint == Bottom) newY += FPLayout->getHeight();
+
+        if (compHint == Right)
+        {
+            if (rightMark)
+            {
+                curX = curX + (remWidth - targetWidth);
+            }
+            else
+            {
+                curX = curX + (remWidth - FPLayout->getWidth());
+            }
+
+        }
+
+        if (compHint == Top)
+        {
+            if (topMark)
+            {
+                curY = curY + (remHeight - targetHeight);
+            }
+            else
+            {
+                curY = curY + (remHeight - FPLayout->getHeight());
+            }
+        }
+
         FPLayout->setLocation(curX, curY);
         // Put the layout on the stack.
         layoutStack[curDepth] = FPLayout;
-        if (compHint == Left || compHint == Right) remWidth -= FPLayout->getWidth();
-        else if (compHint == Top || compHint == Bottom) remHeight -= FPLayout->getHeight();
+
+        if (compHint == Right)
+        {
+            if (rightMark)
+            {
+                remWidth = remWidth - FPLayout->getWidth() + diffWidth;
+                rightMark = false;
+            }
+            else
+            {
+                remWidth -= FPLayout->getWidth();
+            }
+        }
+
+        if (compHint == Top)
+        {
+            if (topMark)
+            {
+                remHeight = remHeight - FPLayout->getHeight() + diffHeight;
+                topMark = false;
+            }
+            else
+            {
+                remHeight -= FPLayout->getHeight();
+            }
+        }
+
+        if (compHint == Left) remWidth -= FPLayout->getWidth();
+        if (compHint == Bottom) remHeight -= FPLayout->getHeight();
+
+        //if (compHint == Left || compHint == Right) remWidth -= FPLayout->getWidth();
+        //else if (compHint == Top || compHint == Bottom) remHeight -= FPLayout->getHeight();
         bool retval = layoutHelper(remWidth, remHeight, newX, newY, layoutStack, curDepth + 1, centerItems, centerItemsCount);
         if (!retval) return false;
     }
