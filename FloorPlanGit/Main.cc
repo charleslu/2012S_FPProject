@@ -625,14 +625,14 @@ int main(int argc, char* argv[])
   generateErrorCase();
 
 
-  generateTRIPS_Examples();
-  generateCheckerBoard_Examples();
-  generateMcPAT_Examples();
-  generateFixedLayout_Example();
+  //generateTRIPS_Examples();
+  //generateCheckerBoard_Examples();
+  //generateMcPAT_Examples();
+  //generateFixedLayout_Example();
 
   // Example code to generate floorplan in SoC2012 Open Source Tool submission.
-  generatePenryn45nm();
-  generate8corePenrynCMP();
+  //generatePenryn45nm();
+  //generate8corePenrynCMP();
 
   return 0;
 }
