@@ -17,7 +17,7 @@
 #include "Floorplan.hh"
 
 // This will be used to keep track of user's request for more output during layout.
-bool verbose = false;
+bool verbose = true;
 
 // Charles: Legalization Problem. This is used to turn on/off whether we need to keep the same area after legalizing the layout.
 bool changeArea = true;
@@ -844,7 +844,7 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         return true;
     }
 
-    // Start by pealing off the first componet cluster.
+    // Start by pealing off the first component cluster.
     // And getting the standard information about it.
     FPObject * comp = removeComponent(0);
     GeographyHint compHint = comp->getHint();

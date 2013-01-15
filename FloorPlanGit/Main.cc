@@ -19,14 +19,14 @@ void generateErrorCase()
 
     geogLayout * fp1 = new geogLayout();
 
-    fp1->addComponentCluster("e3", 1, 3, 3., 1., Right);
-    fp1->addComponentCluster("e4", 1, 3, 3., 1., Right);
-    fp1->addComponentCluster("e1", 1, 3, 3., 1., Bottom);
-    fp1->addComponentCluster("e2", 1, 3, 3., 1., Bottom);
+    fp1->addComponentCluster("e3", 1, 4, 3., 1., Right);
+    fp1->addComponentCluster("e4", 1, 4, 3., 1., Right);
+    fp1->addComponentCluster("e1", 1, 4, 3., 1., Bottom);
+    fp1->addComponentCluster("e2", 1, 4, 3., 1., Bottom);
 
     fp1->layout(AspectRatio, 1.);
 
-    ostream& HSOut = outputHotSpotHeader("Test.flp");
+    ostream& HSOut = outputHotSpotHeader("Re-Test.flp");
     fp1->outputHotSpotLayout(HSOut);
     outputHotSpotFooter(HSOut);
 }
