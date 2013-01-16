@@ -209,7 +209,7 @@ double FPCompWrapper::ARInRange(double AR)
     maxAR = getMaxAR();
     double minAR = getMinAR();
     double retval = AR;
-    if (maxAR < 1)
+    if (maxAR < 1) //If flipped
     {
         retval = MIN (retval, minAR);
         retval = MAX (retval, maxAR);
@@ -221,7 +221,7 @@ double FPCompWrapper::ARInRange(double AR)
     }
     if (verbose)
         cout << "Target AR=" << AR << " minAR=" << minAR << " maxAR=" << maxAR << " returnAR=" << retval << "\n";
-    return retval;
+    return retval; //retval has to be in the range between minAR and maxAR
 }
 
 void FPCompWrapper::flip()
@@ -943,10 +943,10 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
 
         // Charles Start of Add-on Feature
         // If the targetAR is out of maxAR/minAR of the component, re-layout the whole floorplan.
-        bool isSameAR = FPLayout->layout(AspectRatio, targetAR);
+        bool isGoodAR = FPLayout->layout(AspectRatio, targetAR);
         double diffWidth, diffHeight;
 
-        if (!isSameAR)
+        if (!isGoodAR)
         {
             if (compHint == Left || compHint == Right)
             {
@@ -964,7 +964,7 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
                 newAR = pow(newWidth, 2)/getArea();
             }
 
-            // If we decide to not change container's area, re-layout.
+            // Skip it if we want to increase the total area without re-layout
             if (!changeArea) return false;
         }
 
@@ -977,7 +977,7 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         {
             if (rightMark)
             {
-                curX = curX + (remWidth - targetWidth);
+                curX = curX + (remWidth - targetWidth); //Allow the component to exceed the original boundary
             }
             else
             {
@@ -990,7 +990,7 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         {
             if (topMark)
             {
-                curY = curY + (remHeight - targetHeight);
+                curY = curY + (remHeight - targetHeight); //Allow the component to exceed the original boundary
             }
             else
             {
@@ -1002,11 +1002,11 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         // Put the layout on the stack.
         layoutStack[curDepth] = FPLayout;
 
-        if (compHint == Right)
+        if (compHint == Right) // maybe combine this with above code
         {
             if (rightMark)
             {
-                remWidth = remWidth - FPLayout->getWidth() + diffWidth;
+                remWidth = remWidth - FPLayout->getWidth() + diffWidth; // or substract by targetWidth?
                 rightMark = false;
             }
             else

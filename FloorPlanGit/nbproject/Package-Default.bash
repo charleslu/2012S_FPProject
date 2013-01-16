@@ -6,7 +6,7 @@
 
 # Macros
 TOP=`pwd`
-CND_PLATFORM=GNU-MacOSX
+CND_PLATFORM=MinGW-Windows
 CND_CONF=Default
 CND_DISTDIR=dist
 CND_BUILDDIR=build

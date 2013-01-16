@@ -19,10 +19,20 @@ void generateErrorCase()
 
     geogLayout * fp1 = new geogLayout();
 
+    //Testcase 1 Top/Bottom/Left/Right
+    /*
     fp1->addComponentCluster("e3", 1, 4, 3., 1., Right);
     fp1->addComponentCluster("e4", 1, 4, 3., 1., Right);
     fp1->addComponentCluster("e1", 1, 4, 3., 1., Bottom);
     fp1->addComponentCluster("e2", 1, 4, 3., 1., Bottom);
+    */
+
+    //Testcase 2 LeftRight/TopBottom
+    //Testcase 3 Mirror
+    //Testcase 4 180
+    //Testcase 5 Center
+    //Testcase 6 Grid (count > 1)
+
 
     fp1->layout(AspectRatio, 1.);
 
