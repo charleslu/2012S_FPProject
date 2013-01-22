@@ -16,27 +16,39 @@
 void generateErrorCase()
 {
     // This section is to test the bottom-up fixups feature
-
+    
     geogLayout * fp1 = new geogLayout();
 
-    //Testcase 1 Top/Bottom/Left/Right
-    /*
-    fp1->addComponentCluster("e3", 1, 4, 3., 1., Right);
-    fp1->addComponentCluster("e4", 1, 4, 3., 1., Right);
-    fp1->addComponentCluster("e1", 1, 4, 3., 1., Bottom);
-    fp1->addComponentCluster("e2", 1, 4, 3., 1., Bottom);
-    */
-
+    //Testcase 1 Top/Bottom/Left/Right   
+    //fp1->addComponentCluster("e5", 2, 10, 5., 1., LeftRight);
+    //fp1->addComponentCluster("e6", 2, 10, 5., 1., TopBottom);
+    
+    fp1->addComponentCluster("e1", 1, 4, 3., 1., Right);
+    fp1->addComponentCluster("e2", 1, 4, 3., 1., Right);
+   
+    
     //Testcase 2 LeftRight/TopBottom
+    fp1->addComponentCluster("e3", 2, 10, 5., 1., LeftRight);
+    fp1->addComponentCluster("e4", 2, 10, 5., 1., TopBottom);
+    
+    fp1->addComponentCluster("e5", 1, 4, 3., 1., Bottom);
+    fp1->addComponentCluster("e6", 1, 4, 3., 1., Bottom);
+    
+    //Testcase 2.1 LeftRight/TopBottom with odd count
+    fp1->addComponentCluster("e7", 3, 9, 5., 1., LeftRight);
+    fp1->addComponentCluster("e8", 5, 9, 3., 1., TopBottom);
+    
     //Testcase 3 Mirror
+    //Testcase 3.1 Mirror odd count
     //Testcase 4 180
+    //Testcase 4.1 180 odd count
     //Testcase 5 Center
     //Testcase 6 Grid (count > 1)
 
 
     fp1->layout(AspectRatio, 1.);
 
-    ostream& HSOut = outputHotSpotHeader("Re-Test.flp");
+    ostream& HSOut = outputHotSpotHeader("TopBottomOddN.flp");
     fp1->outputHotSpotLayout(HSOut);
     outputHotSpotFooter(HSOut);
 }
@@ -632,17 +644,17 @@ int main(int argc, char* argv[])
   ///////////////////////////////////////////////////////
   // Look at these subroutines above for examples of how to build floorplans using this tool.
   //////////////////////////////////////////////////////
-  generateErrorCase();
+  //generateErrorCase();
 
 
   //generateTRIPS_Examples();
   //generateCheckerBoard_Examples();
-  //generateMcPAT_Examples();
-  //generateFixedLayout_Example();
+  generateMcPAT_Examples();
+  generateFixedLayout_Example();
 
   // Example code to generate floorplan in SoC2012 Open Source Tool submission.
-  //generatePenryn45nm();
-  //generate8corePenrynCMP();
+  generatePenryn45nm();
+  generate8corePenrynCMP();
 
   return 0;
 }

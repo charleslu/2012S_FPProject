@@ -16,7 +16,18 @@
         <df name="Release">
         </df>
       </df>
+      <df name="Optimized Output">
+      </df>
       <df name="Original Output">
+      </df>
+      <df name="Updated Output">
+        <in>Alternate-25.flp</in>
+        <in>CheckAlternate.flp</in>
+        <in>CheckBoard.flp</in>
+        <in>CheckCentered.flp</in>
+        <in>Regular-25.flp</in>
+        <in>Regular-50.flp</in>
+        <in>Rotated-25.flp</in>
       </df>
       <in>Floorplan.cc</in>
       <in>Floorplan.hh</in>

@@ -197,8 +197,10 @@ class FPContainer : public FPObject {
     //    when things can be deleted.
     int itemCount;
     FPObject ** items;
+    //double newAR;
     void       addComponentAtIndex (FPObject * comp, int index);
     FPObject * removeComponentAtIndex (int index);
+    void       shuffleComponents();
 
 protected:
     static int maxItemCount;
@@ -294,7 +296,7 @@ class geogLayout : public FPContainer {
     // int        centerItemsCount;
     bool layoutHelper (double targetWidth, double targetHeight, double curX, double curY, FPObject ** layoutStack, int curDepth, FPObject ** centerItems, int centerItemsCount);
     double newAR;
-
+    
 public:
     geogLayout ();
 
