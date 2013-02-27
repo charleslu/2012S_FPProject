@@ -2,7 +2,94 @@
 <configurationDescriptor version="84">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df name="FloorPlanGit" root=".">
+      <df name="130223 Optimized Output">
+      </df>
+      <df name="130223 Updated Output">
+        <in>Alternate-25.flp</in>
+        <in>CMP8Core.flp</in>
+        <in>CheckAlternate.flp</in>
+        <in>CheckBoard.flp</in>
+        <in>CheckCentered.flp</in>
+        <in>McPAT_16x4.flp</in>
+        <in>McPAT_32x1.flp</in>
+        <in>McPAT_32x2.flp</in>
+        <in>McPAT_64x1.flp</in>
+        <in>McPAT_8x8.flp</in>
+        <in>Penryn45.flp</in>
+        <in>Regular-25.flp</in>
+        <in>Regular-50.flp</in>
+        <in>Rotated-25.flp</in>
+        <in>TRIPS-Core.flp</in>
+        <in>TRIPS-Final.flp</in>
+        <in>alphaOneHalf.flp</in>
+        <in>alphaTwo.flp</in>
+        <in>alphadup.flp</in>
+      </df>
       <df name="Archive">
+        <df name="130122 Updated Output">
+          <in>Alternate-25.flp</in>
+          <in>CMP8Core.flp</in>
+          <in>CheckAlternate.flp</in>
+          <in>CheckBoard.flp</in>
+          <in>CheckCentered.flp</in>
+          <in>McPAT_16x4.flp</in>
+          <in>McPAT_32x1.flp</in>
+          <in>McPAT_32x2.flp</in>
+          <in>McPAT_64x1.flp</in>
+          <in>McPAT_8x8.flp</in>
+          <in>Penryn45.flp</in>
+          <in>Regular-25.flp</in>
+          <in>Regular-50.flp</in>
+          <in>Rotated-25.flp</in>
+          <in>TRIPS-Core.flp</in>
+          <in>TRIPS-Final.flp</in>
+          <in>alphaOneHalf.flp</in>
+          <in>alphaTwo.flp</in>
+          <in>alphadup.flp</in>
+        </df>
+        <df name="130123 Output">
+          <in>CMP8Core.flp</in>
+          <in>McPAT_16x4.flp</in>
+          <in>McPAT_32x1.flp</in>
+          <in>McPAT_32x2.flp</in>
+          <in>McPAT_64x1.flp</in>
+          <in>McPAT_8x8.flp</in>
+          <in>Penryn45.flp</in>
+          <in>alphaOneHalf.flp</in>
+          <in>alphaTwo.flp</in>
+          <in>alphadup.flp</in>
+        </df>
+        <df name="Flag Added">
+          <in>Alternate-25.flp</in>
+          <in>CMP8Core.flp</in>
+          <in>CheckAlternate.flp</in>
+          <in>CheckBoard.flp</in>
+          <in>CheckCentered.flp</in>
+          <in>McPAT_16x4.flp</in>
+          <in>McPAT_32x1.flp</in>
+          <in>McPAT_32x2.flp</in>
+          <in>McPAT_64x1.flp</in>
+          <in>McPAT_8x8.flp</in>
+          <in>Penryn45.flp</in>
+          <in>Regular-25.flp</in>
+          <in>Regular-50.flp</in>
+          <in>Rotated-25.flp</in>
+          <in>TRIPS-Core.flp</in>
+          <in>TRIPS-Final.flp</in>
+          <in>alphaOneHalf.flp</in>
+          <in>alphaTwo.flp</in>
+          <in>alphadup.flp</in>
+        </df>
+        <df name="Test Legalizing">
+          <in>T1.flp</in>
+          <in>T2.flp</in>
+          <in>T3.flp</in>
+        </df>
+        <df name="Test Non-Legalizing">
+          <in>T1.flp</in>
+          <in>T2.flp</in>
+          <in>T3.flp</in>
+        </df>
       </df>
       <df name="bin">
         <df name="Debug">
@@ -19,15 +106,6 @@
       <df name="Optimized Output">
       </df>
       <df name="Original Output">
-      </df>
-      <df name="Updated Output">
-        <in>Alternate-25.flp</in>
-        <in>CheckAlternate.flp</in>
-        <in>CheckBoard.flp</in>
-        <in>CheckCentered.flp</in>
-        <in>Regular-25.flp</in>
-        <in>Regular-50.flp</in>
-        <in>Rotated-25.flp</in>
       </df>
       <in>Floorplan.cc</in>
       <in>Floorplan.hh</in>

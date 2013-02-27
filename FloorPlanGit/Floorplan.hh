@@ -105,6 +105,7 @@ protected:
                                 // But for now this is simpler.
     int    count;               // The number of the these components in this group of components.
                                 // This makes it easier to add, say, 8 identical cores as one object.
+    bool   state;               // Legalization specific field.
 
 public:
     FPObject();
@@ -125,6 +126,7 @@ public:
     virtual string        getName()   { return name; }
     virtual ComponentType getType()   { return type; }
     virtual int           getCount()  { return count; }
+    virtual bool          getState()  { return state; }
             string        getUniqueName()  { if (name == " " || name == "") return name;
                                              else return name + getStringFromInt(Name2Count(name)); }
 
@@ -142,6 +144,7 @@ public:
     virtual GeographyHint setHint(GeographyHint newHint) { return hint = newHint; }
     virtual void          setSize(double widthArg, double heightArg);
     virtual void          setLocation(double xArg, double yArg);
+    virtual bool          setState(bool newState) { return state = newState; }
 
     virtual bool          layout (FPOptimization opt, double targetAR =  1.0) = 0;
     virtual void          outputHotSpotLayout(ostream& o, double startX = 0.0, double startY = 0.0);
@@ -200,7 +203,6 @@ class FPContainer : public FPObject {
     //double newAR;
     void       addComponentAtIndex (FPObject * comp, int index);
     FPObject * removeComponentAtIndex (int index);
-    void       shuffleComponents();
 
 protected:
     static int maxItemCount;
@@ -295,6 +297,8 @@ class geogLayout : public FPContainer {
     // FPObject** centerItems;    // During layout, we will store up the center items, stick them in a bag, and lay them out last.
     // int        centerItemsCount;
     bool layoutHelper (double targetWidth, double targetHeight, double curX, double curY, FPObject ** layoutStack, int curDepth, FPObject ** centerItems, int centerItemsCount);
+    
+    // Added for legalization. TODO: Protect this value
     double newAR;
     
 public:
@@ -306,6 +310,30 @@ public:
     virtual FPObject * addComponentCluster (string name, int count, double area, double maxARArg, double minARArg, GeographyHint hint);
     virtual void       addComponent (FPObject * comp, int count, GeographyHint hint);
 };
+
+// Maybe this will be needed later.
+/*
+class Legalize {
+    //Legalizing Features
+    bool isLegalizing;
+    bool changeArea;
+    bool topBottomInversion;
+    
+protected:
+    bool topMark;
+    bool rightMark;
+    
+public:
+    Legalize ();
+    
+    bool getIsLegalizing() { return isLegalizing; };
+    bool getChangeArea() { return changeArea; };
+    bool getTopBottomInversion() { return topBottomInversion; };
+    void setIsLegalizing (bool isLegalizing) { this->isLegalizing = isLegalizing; };
+    void setChangeArea (bool changeArea) { this->changeArea = changeArea; };
+    void setTopBottomInversion (bool topBottomInversion) { this->topBottomInversion = topBottomInversion; };
+};
+*/
 
 // Output Helper Functions.
 ostream& outputHotSpotHeader(const char * filename);

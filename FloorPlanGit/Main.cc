@@ -17,6 +17,7 @@ void generateErrorCase()
 {
     // This section is to test the bottom-up fixups feature
     
+    // NOW TODO: Add a method called legalizing to geogLayout.
     geogLayout * fp1 = new geogLayout();
 
     //Testcase 1 Top/Bottom/Left/Right   
@@ -48,10 +49,43 @@ void generateErrorCase()
 
     fp1->layout(AspectRatio, 1.);
 
-    ostream& HSOut = outputHotSpotHeader("TopBottomOddN.flp");
+    ostream& HSOut = outputHotSpotHeader("TBEnable.flp");
     fp1->outputHotSpotLayout(HSOut);
     outputHotSpotFooter(HSOut);
 }
+    
+void generateErrorCase2() {
+    geogLayout * fp2 = new geogLayout();
+    fp2->addComponentCluster("e1", 1, 4, 2., 1., Top);
+    fp2->addComponentCluster("e2", 1, 4, 2., 1., Right);
+    fp2->addComponentCluster("e3", 1, 4, 2., 1., Bottom);
+    fp2->addComponentCluster("e4", 1, 4, 2., 1., Left);
+    fp2->addComponentCluster("e5", 2, 2, 5., 1., LeftRight);
+    fp2->addComponentCluster("e6", 2, 2, 5., 1., TopBottom);
+    
+    fp2->layout(AspectRatio, 1.);
+
+    ostream& HSOut = outputHotSpotHeader("T2.flp");
+    fp2->outputHotSpotLayout(HSOut);
+    outputHotSpotFooter(HSOut);    
+}    
+    
+void generateErrorCase3() {
+    geogLayout * fp3 = new geogLayout();
+    fp3->addComponentCluster("e4", 1, 15, 4., 1., Right);    
+    fp3->addComponentCluster("e1", 1, 9, 3., 1., Top);
+    fp3->addComponentCluster("e5", 1, 7, 3., 1., Bottom);
+    fp3->addComponentCluster("e3", 1, 5, 2., 1., Right);
+    fp3->addComponentCluster("e2", 1, 2, 3., 1., Left);
+    
+    fp3->layout(AspectRatio, 2.);
+    
+    ostream& HSOut = outputHotSpotHeader("T3.flp");
+    fp3->outputHotSpotLayout(HSOut);
+    outputHotSpotFooter(HSOut);
+}
+
+
 
 void generateTRIPS_Examples()
 {
@@ -612,6 +646,17 @@ void generateFixedLayout_Example()
   delete cont;
 }
 
+void callSetupExamples () {
+  generateTRIPS_Examples();
+  generateCheckerBoard_Examples();
+  generateMcPAT_Examples();
+  generateFixedLayout_Example();
+
+  // Example code to generate floorplan in SoC2012 Open Source Tool submission.
+  generatePenryn45nm();
+  generate8corePenrynCMP();
+}
+
 int main(int argc, char* argv[])
 {
   string usageString = "Usage:\nArchFP [-h] [-v]\n-h     Print out this help information.\n-v     Output verbose layout information to stdout.\n"
@@ -645,16 +690,9 @@ int main(int argc, char* argv[])
   // Look at these subroutines above for examples of how to build floorplans using this tool.
   //////////////////////////////////////////////////////
   //generateErrorCase();
-
-
-  //generateTRIPS_Examples();
-  //generateCheckerBoard_Examples();
-  generateMcPAT_Examples();
-  generateFixedLayout_Example();
-
-  // Example code to generate floorplan in SoC2012 Open Source Tool submission.
-  generatePenryn45nm();
-  generate8corePenrynCMP();
+  generateErrorCase2();
+  //generateErrorCase3();
+  //callSetupExamples();
 
   return 0;
 }
