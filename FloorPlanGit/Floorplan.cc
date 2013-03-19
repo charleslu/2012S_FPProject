@@ -28,10 +28,12 @@ bool rightMark = true;
 bool topMark = true; // Once an item is placed at right or top, mark = false;
 
 bool topBottomInversion = true; // TopBottom items can be inverted to BottomTop order
+
 bool checkOverlap = true; // Overlap detection 
+double expandHeight = 0, expandWidth = 0; //Overlap area expansion
 
 // Temporary local for crazy mirror reflection stuff.
-#define maxMirrorDepth 20
+#define maxMirrorDepth 50
 static bool xReflect = false;
 static double xLeft[maxMirrorDepth];
 static double xRight[maxMirrorDepth];
@@ -43,7 +45,7 @@ static int yMirrorDepth = 0;
 static bool printNames = true;
 
 // Charles Maximum layout retries
-#define maxRetry 2
+#define maxRetry 20
 
 struct OverlapException: public exception
 {
@@ -711,6 +713,12 @@ bool geogLayout::layout(FPOptimization opt, double targetAR) {
         area = totalArea();
         double remHeight = sqrt(area / targetAR);
         double remWidth = area / remHeight;
+        
+        if (checkOverlap && legalizing) {
+            remHeight += expandHeight;
+            remWidth += expandWidth;
+            area = remHeight * remWidth;
+        }
 
         if (verbose)
             cout << "In geogLayout.  A=" << area << " W=" << remWidth << " H=" << remHeight << "\n";
@@ -738,10 +746,11 @@ bool geogLayout::layout(FPOptimization opt, double targetAR) {
             //Reset legalizing helpers
             rightMark = true;
             topMark = true;
+            retval = false;            
             
             //Method 1: Sort by decreasing area
-            sortByArea();
-            checkOverlap = false;
+            //sortByArea();
+            //checkOverlap = false;
             
         } catch (AreaException& e) { //Triggered if fixed area is desired
             if (verbose) cout << e.what() << endl;
@@ -752,6 +761,7 @@ bool geogLayout::layout(FPOptimization opt, double targetAR) {
             for (int i = itemCount; i > 0; i--) addComponentToFront(backupItems[i-1]);
             rightMark = true;
             topMark = true;
+            retval = false;
             
             //Re-defined targetAR based on geogHint and reset item list.
             targetAR = newAR;
@@ -760,7 +770,7 @@ bool geogLayout::layout(FPOptimization opt, double targetAR) {
         
         retryCount++;
   
-    }    while (retryCount < maxRetry);
+    } while (!retval && retryCount < maxRetry);
 
     // By now, the item list should be empty.
     if (getComponentCount() != 0) {
@@ -782,6 +792,7 @@ bool geogLayout::layout(FPOptimization opt, double targetAR) {
         height = MAX(height, comp->getY() + comp->getHeight());
     }
     area = width * height;
+    expandHeight = 0; expandWidth = 0;
 
     free(centerItems);
     free(layoutStack);
@@ -828,6 +839,11 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         // Put the layout on the stack.
         // DO we really need to do this????
         layoutStack[curDepth] = FPLayout;
+        
+        if (legalizing && checkOverlap) {
+            detectOverlap(layoutStack, curDepth, FPLayout, FPLayout);
+        }
+        
         return true;
     }
 
@@ -893,7 +909,13 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         }
         compHint = comp->getHint();
     }
-
+    
+    //debug
+    int r = 0;
+    if (comp->getName() == "eLR180odd") {
+        r = 2;
+    }
+    r++;
     // Now handle left, right, top, bottom.
     double newX, newY;
     bool outOfBound, isGoodAR;
@@ -1019,29 +1041,8 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         
         
         // Overlap detection O(N^2) for now
-        if (legalizing && checkOverlap) {
-            for (int i = curDepth; i >= 0; i--) {
-
-            // Only compare to the one before itself, O(N) now.
-            //if (curDepth > 0) {
-                double x1, x2, y1, y2, h1, h2, w1, w2, d;
-                FPObject * stackFPLayout = layoutStack[i]; //curDepth - 1
-
-                x1 = stackFPLayout->getX();
-                x2 = FPLayout->getX();
-                y1 = stackFPLayout->getY();
-                y2 = FPLayout->getY();
-                h1 = stackFPLayout->getHeight();
-                h2 = FPLayout->getHeight();
-                w1 = stackFPLayout->getWidth();
-                w2 = FPLayout->getWidth();
-                d = 0.0000001; //for rounding error
-
-                if (x2 > x1 && w1 - (x2 - x1) > d) throw OverlapException();
-                if (x2 < x1 && w2 - (x1 - x2) > d) throw OverlapException();
-                if (y2 > y1 && h1 - (y2 - y1) > d) throw OverlapException();
-                if (y2 < y1 && h2 - (y1 - y2) > d) throw OverlapException();
-            }
+        if (legalizing && checkOverlap && curDepth != 0) {
+            detectOverlap(layoutStack, curDepth, comp, FPLayout);
         }
 
         //if (compHint == Left || compHint == Right) remWidth -= FPLayout->getWidth();
@@ -1066,12 +1067,79 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
     return true;
 }
 
-/*
-bool geogLayout::fixLayout()
-{
 
+bool FPContainer::detectOverlap(FPObject ** layoutStack, int curDepth, FPObject * comp, FPObject * FPLayout)
+{
+    for (int i = curDepth; i >= 0; i--) {
+
+    // Only compare to the one before itself, O(N) now.
+    //if (curDepth > 0) {
+        double x1, x2, y1, y2, h1, h2, w1, w2, d;
+        double widthOver = 0, heightOver = 0;
+        bool isHeightOverlap = false, isWidthOverlap = false;
+        FPObject * stackFPLayout = layoutStack[i]; //curDepth - 1
+
+        x1 = stackFPLayout->getX(); x2 = FPLayout->getX();
+        y1 = stackFPLayout->getY(); y2 = FPLayout->getY();
+        h1 = stackFPLayout->getHeight(); h2 = FPLayout->getHeight();
+        w1 = stackFPLayout->getWidth(); w2 = FPLayout->getWidth();
+        d = 0.0000001; //for rounding error
+
+        if (x2 > x1 && w1 - (x2 - x1) > d) {
+            widthOver = w1 - (x2 - x1);
+            isWidthOverlap = true;
+        }               
+        if (x2 < x1 && w2 - (x1 - x2) > d) {
+            widthOver = w2 - (x1 - x2);
+            isWidthOverlap = true;
+        }
+        /*
+        if (x2 == x1) {
+            isWidthOverlap = true;
+            if (w2 >= w1) {
+                widthOver = w1;
+            } else {
+                widthOver = w2;
+            }
+        }
+        */
+
+        if (y2 > y1 && h1 - (y2 - y1) > d) {
+            heightOver = h1 - (y2 - y1);
+            isHeightOverlap = true;
+        }
+        if (y2 < y1 && h2 - (y1 - y2) > d) {
+            heightOver = h2 - (y1 - y2);
+            isHeightOverlap = true;
+        }
+        /*
+        if (y2 == y1) {
+            isHeightOverlap = true;
+            if (h2 >= h1) {
+                heightOver = h1;
+            } else {
+                heightOver = h2;
+            }
+        }
+        */
+
+        if (isHeightOverlap && isWidthOverlap) {
+            if (widthOver > heightOver) {
+                expandHeight += heightOver;                       
+            } else {
+                expandWidth += widthOver;
+            }
+
+            if (verbose)
+            cout << "In geog, detected overlap for component " << comp->getName() 
+                 << " expandHeight = " << expandHeight << "\n" << " expandWidth = " << expandWidth << "\n" ;
+            throw OverlapException();
+        } 
+    }
+    
+    return true;
 }
- */
+
 
 void geogLayout::outputHotSpotLayout(ostream& o, double startX, double startY) {
     pushMirrorContext(startX, startY);

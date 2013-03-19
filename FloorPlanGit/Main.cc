@@ -20,36 +20,46 @@ void generateErrorCase()
     // NOW TODO: Add a method called legalizing to geogLayout.
     geogLayout * fp1 = new geogLayout();
 
-    //Testcase 1 Top/Bottom/Left/Right   
-    //fp1->addComponentCluster("e5", 2, 10, 5., 1., LeftRight);
-    //fp1->addComponentCluster("e6", 2, 10, 5., 1., TopBottom);
-    
-    fp1->addComponentCluster("e1", 1, 4, 3., 1., Right);
-    fp1->addComponentCluster("e2", 1, 4, 3., 1., Right);
+    //Testcase 1 Top/Bottom/Left/Right    
+    fp1->addComponentCluster("eR1", 1, 4, 3., 1., Right);
+    fp1->addComponentCluster("eL1", 1, 4, 3., 1., Left);
    
     
     //Testcase 2 LeftRight/TopBottom
-    fp1->addComponentCluster("e3", 2, 10, 5., 1., LeftRight);
-    fp1->addComponentCluster("e4", 2, 10, 5., 1., TopBottom);
+    fp1->addComponentCluster("eLReven", 2, 10, 5., 1., LeftRight);
+    fp1->addComponentCluster("eTBeven", 2, 10, 5., 1., TopBottom);
     
-    fp1->addComponentCluster("e5", 1, 4, 3., 1., Bottom);
-    fp1->addComponentCluster("e6", 1, 4, 3., 1., Bottom);
+    fp1->addComponentCluster("eB1", 1, 4, 3., 1., Bottom);
+    fp1->addComponentCluster("eT1", 1, 4, 3., 1., Top);
     
     //Testcase 2.1 LeftRight/TopBottom with odd count
-    fp1->addComponentCluster("e7", 3, 9, 5., 1., LeftRight);
-    fp1->addComponentCluster("e8", 5, 9, 3., 1., TopBottom);
+    fp1->addComponentCluster("eLRodd", 3, 9, 5., 1., LeftRight);
+    fp1->addComponentCluster("eTBodd", 5, 9, 3., 1., TopBottom);
     
     //Testcase 3 Mirror
+    fp1->addComponentCluster("eLRMeven", 2, 11, 5., 1., LeftRightMirror);
+    fp1->addComponentCluster("eTBMeven", 2, 11, 5., 1., TopBottomMirror);
+    
     //Testcase 3.1 Mirror odd count
+    fp1->addComponentCluster("eTBMeven", 3, 7, 4., 1., TopBottomMirror);
+    fp1->addComponentCluster("eLRMeven", 7, 4, 3., 1., TopBottomMirror);
+    
     //Testcase 4 180
+    fp1->addComponentCluster("eLR180even", 6, 8.99, 3., 1., LeftRight180);
+    fp1->addComponentCluster("eTB180even", 4, 11.949, 3., 1., TopBottom180);
+    
     //Testcase 4.1 180 odd count
+    fp1->addComponentCluster("eTB180odd", 3, 3.15033, 2., 1., TopBottom180);
+    fp1->addComponentCluster("eLR180odd", 5, 3.94114, 2., 1., LeftRight180);
+    
     //Testcase 5 Center
-    //Testcase 6 Grid (count > 1)
-
+    fp1->addComponentCluster("eC", 1, 5.622, 3., 1., Center);
+    fp1->addComponentCluster("eCMultEven", 6, 3.51357, 2., 1., Center);
+    fp1->addComponentCluster("eCMultOdd", 9, 1.5336, 4., 1., Center);
 
     fp1->layout(AspectRatio, 1.);
 
-    ostream& HSOut = outputHotSpotHeader("TBEnable.flp");
+    ostream& HSOut = outputHotSpotHeader("testCenter.flp");
     fp1->outputHotSpotLayout(HSOut);
     outputHotSpotFooter(HSOut);
 }
@@ -65,7 +75,7 @@ void generateErrorCase2() {
     
     fp2->layout(AspectRatio, 1.);
 
-    ostream& HSOut = outputHotSpotHeader("T2.flp");
+    ostream& HSOut = outputHotSpotHeader("testLegalized2.flp");
     fp2->outputHotSpotLayout(HSOut);
     outputHotSpotFooter(HSOut);    
 }    
@@ -80,7 +90,7 @@ void generateErrorCase3() {
     
     fp3->layout(AspectRatio, 2.);
     
-    ostream& HSOut = outputHotSpotHeader("T3.flp");
+    ostream& HSOut = outputHotSpotHeader("testLegalized3.flp");
     fp3->outputHotSpotLayout(HSOut);
     outputHotSpotFooter(HSOut);
 }
@@ -689,8 +699,8 @@ int main(int argc, char* argv[])
   ///////////////////////////////////////////////////////
   // Look at these subroutines above for examples of how to build floorplans using this tool.
   //////////////////////////////////////////////////////
-  //generateErrorCase();
-  generateErrorCase2();
+  generateErrorCase();
+  //generateErrorCase2();
   //generateErrorCase3();
   //callSetupExamples();
 

@@ -239,6 +239,8 @@ public:
     virtual FPObject *     addComponentCluster (string name, int count, double area, double maxARArg, double minARArg);
     virtual void           addComponent (FPObject * comp);
     virtual void           addComponent (FPObject * comp, int count);
+    
+    virtual bool           detectOverlap(FPObject ** layoutStack, int curDepth, FPObject * comp, FPObject * FPLayout);
 };
 
 // This will just be a collection of components to lay out in the given aspect ratio.
