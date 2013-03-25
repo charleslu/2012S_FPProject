@@ -844,9 +844,7 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         // DO we really need to do this????
         layoutStack[curDepth] = FPLayout;
         
-        if (legalizing && checkOverlap) {
-            detectOverlap(layoutStack, curDepth, FPLayout);
-        }
+        if (legalizing && checkOverlap) detectOverlap(layoutStack, curDepth, FPLayout);
         
         return true;
     }
@@ -997,8 +995,8 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         }
 
         //Allow the component to cross the original boundary.
-        //targetWidth can be different than FPLayout->getWidth() if a ratio is changed by constraints.
-        //We may choose to not cross the boundary by changing the - targetWidth to - Width.
+        //targetWidth can be different than FPLayout->getWidth() if AR is limited by constraints.
+        //We may choose to not cross the boundary by changing the - targetWidth to - getWidth().
         if (compHint == Right) {
             if (rightMark && legalizing) {
                 if (!outOfBound) curX = curX + (remWidth - targetWidth);
@@ -1039,12 +1037,8 @@ bool geogLayout::layoutHelper(double remWidth, double remHeight, double curX, do
         
         
         // Overlap detection O(N^2) for now
-        if (legalizing && checkOverlap && curDepth != 0) {
-            detectOverlap(layoutStack, curDepth, FPLayout);
-        }
+        if (legalizing && checkOverlap && curDepth > 0) detectOverlap(layoutStack, curDepth, FPLayout);
 
-        //if (compHint == Left || compHint == Right) remWidth -= FPLayout->getWidth();
-        //else if (compHint == Top || compHint == Bottom) remHeight -= FPLayout->getHeight();
         try {
             layoutHelper(remWidth, remHeight, newX, newY, layoutStack, curDepth + 1, centerItems, centerItemsCount);
             //if (!retval) return false;
